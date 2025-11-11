@@ -4,6 +4,7 @@ import com.espacovista.controlefinanceiro.entity.Graduacao;
 import com.espacovista.controlefinanceiro.repository.GraduacaoRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class GraduacaoController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         graduacaoRepository.deleteById(id);
         return ResponseEntity.noContent().build();

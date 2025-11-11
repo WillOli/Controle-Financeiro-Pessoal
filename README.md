@@ -27,6 +27,18 @@ Opcionalmente, você pode definir:
 - `spring.datasource.url` usa as variáveis de ambiente para host, porta e nome do banco.
 - `spring.jpa.hibernate.ddl-auto=update` para criar/atualizar tabelas conforme entidades (desenvolvimento).
 
+## Autenticação
+- Endpoints:
+  - `POST /auth/login`: retorna JWT para autenticação.
+  - `POST /auth/register`: cria usuário (protegido com role ADMIN).
+- Configuração:
+  - Defina `JWT_SECRET` no ambiente para o segredo do token.
+  - `jwt.expiration-ms` em `application.properties` controla expiração do token.
+- Seed de usuário ADMIN:
+  - Na primeira execução, se não houver usuários, um ADMIN padrão é criado.
+  - Credenciais padrão: `ADMIN_USERNAME=admin`, `ADMIN_PASSWORD=admin123` (podem ser definidos por variáveis de ambiente).
+  - Altere essas variáveis em produção para valores seguros.
+
 ## Próximos passos
 - Modelar entidades: `Aluno`, `Graduacao`, `HistoricoGraduacao`, `Mensalidade`, `Usuario`.
 - Criar repositórios, serviços e controllers.

@@ -82,9 +82,7 @@ public class AlunoService {
         if (dto.dataInicio != null) a.setDataInicio(dto.dataInicio);
         if (dto.statusAluno != null) a.setStatusAluno(dto.statusAluno);
         if (dto.graduacaoAtualId != null) {
-            Graduacao g = graduacaoRepository.findById(dto.graduacaoAtualId)
-                    .orElseThrow(() -> new IllegalArgumentException("Graduação não encontrada"));
-            a.setGraduacaoAtual(g);
+            throw new IllegalArgumentException("Troca de graduação deve ser feita via promoção (/alunos/{id}/promover)");
         }
         a = alunoRepository.save(a);
         return toDTO(a);
@@ -139,6 +137,23 @@ public class AlunoService {
         }).collect(Collectors.toList());
 
         return p;
+    }
+
+    @Transactional
+    public void promoverAluno(Long alunoId, com.espacovista.controlefinanceiro.dto.PromocaoAlunoDTO dto) {
+        Aluno aluno = alunoRepository.findById(alunoId)
+                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado"));
+        Graduacao nova = graduacaoRepository.findById(dto.novaGraduacaoId)
+                .orElseThrow(() -> new IllegalArgumentException("Graduação não encontrada"));
+
+        aluno.setGraduacaoAtual(nova);
+        alunoRepository.save(aluno);
+
+        HistoricoGraduacao h = new HistoricoGraduacao();
+        h.setAluno(aluno);
+        h.setGraduacao(nova);
+        h.setDataGraduacao(dto.dataGraduacao);
+        historicoRepository.save(h);
     }
 
     @Transactional

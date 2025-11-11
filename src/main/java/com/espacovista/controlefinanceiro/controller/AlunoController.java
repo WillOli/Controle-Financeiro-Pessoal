@@ -3,11 +3,13 @@ package com.espacovista.controlefinanceiro.controller;
 import com.espacovista.controlefinanceiro.dto.AlunoCreateDTO;
 import com.espacovista.controlefinanceiro.dto.AlunoDTO;
 import com.espacovista.controlefinanceiro.dto.AlunoProfileDTO;
+import com.espacovista.controlefinanceiro.dto.PromocaoAlunoDTO;
 import com.espacovista.controlefinanceiro.dto.AlunoUpdateDTO;
 import com.espacovista.controlefinanceiro.entity.enums.StatusAluno;
 import com.espacovista.controlefinanceiro.service.AlunoService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +34,7 @@ public class AlunoController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('INSTRUTOR') or hasRole('ADMIN')")
     public ResponseEntity<Page<AlunoDTO>> search(
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) StatusAluno status,
@@ -50,5 +53,12 @@ public class AlunoController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<AlunoDTO> changeStatus(@PathVariable Long id, @RequestParam StatusAluno status) {
         return ResponseEntity.ok(alunoService.changeStatus(id, status));
+    }
+
+    @PostMapping("/{id}/promover")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> promover(@PathVariable Long id, @Valid @RequestBody PromocaoAlunoDTO dto) {
+        alunoService.promoverAluno(id, dto);
+        return ResponseEntity.ok().build();
     }
 }
