@@ -1,5 +1,3 @@
-# Controle Financeiro - Backend (Java Spring Boot)
-
 ## Visão geral
 Backend para gestão de alunos, graduações e mensalidades do Grupo de Capoeira Ginga (Mestre Agostinho e Contra Mestre Alex).
 
