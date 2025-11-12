@@ -28,7 +28,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/health").permitAll()
+                        // CORREÇÃO AQUI: Apenas /auth/login e /health são públicos
+                        .requestMatchers("/auth/login", "/health").permitAll()
+                        // O resto (incluindo /auth/register) exige autenticação
                         .requestMatchers("/alunos/**", "/graduacoes/**", "/mensalidades/**").authenticated()
                         .anyRequest().authenticated()
                 );
