@@ -11,6 +11,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableMethodSecurity
@@ -27,9 +30,16 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(auth -> auth
                         // CORREÇÃO AQUI: Apenas /auth/login e /health são públicos
                         .requestMatchers("/auth/login", "/health").permitAll()
+                        // Regras específicas por endpoint
+                        .requestMatchers(HttpMethod.POST, "/alunos/*/promover").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/auth/register").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/mensalidades/pagar").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/mensalidades/pendentes").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/mensalidades/*/status").hasRole("ADMIN")
                         // O resto (incluindo /auth/register) exige autenticação
                         .requestMatchers("/alunos/**", "/graduacoes/**", "/mensalidades/**").authenticated()
                         .anyRequest().authenticated()
